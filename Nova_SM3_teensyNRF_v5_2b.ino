@@ -94,19 +94,19 @@ int debug_spd = 5;               //default speed for debug movements
 byte slave_active = 1;            //activate slave arduino nano
 byte pwm_active = 1;              //activate pwm controller / servos
 byte nrf_active = 1;              //activate NRF24 remote control
-byte serial_active = 0;           //activate serial monitor command input
-byte mpu_active = 0;              //activate MPU6050 
+byte serial_active = 1;           //activate serial monitor command input
+byte mpu_active = 1;              //activate MPU6050 
 byte rgb_active = 1;              //activate RGB modules
 byte oled_active = 0;             //activate OLED display
 byte pir_active = 0;              //activate PIR motion sensor
 byte uss_active = 0;              //activate Ultra-Sonic sensors
 byte amp_active = 0;              //activate amperate monitoring
-byte batt_active = 1;             //activate battery level monitoring
-byte buzz_active = 0;             //activate simple tone sounds 
-byte melody_active = 0;           //activate melodic tone sounds 
-byte mp3_active = 0;              //activate if mp3 player installed
-byte splash_active = 1;           //show all loading graphics & sounds
-byte quick_boot = 0;              //skip most loading graphics & sounds
+byte batt_active = 0;             //activate battery level monitoring
+byte buzz_active = 1;             //activate simple tone sounds 
+byte melody_active = 1;           //activate melodic tone sounds 
+byte mp3_active = 1;              //activate if mp3 player installed
+byte splash_active = 0;           //show all loading graphics & sounds
+byte quick_boot = 1;              //skip most loading graphics & sounds
 
 #define MP3_PLAYER_TYPE 0         //set to 1 for Mini Pro or to 0 for Mini
 
@@ -722,7 +722,7 @@ void setup() {
       if (debug8) Serial.println(F("radio hardware is not responding!!"));
       while (1) {}
     } else {
-      nrf_radio.setPALevel(RF24_PA_LOW);
+      nrf_radio.setPALevel(RF24_PA_MAX);
       nrf_radio.setPayloadSize(sizeof(rc_data));
       nrf_radio.setChannel(124);
       nrf_radio.openReadingPipe(1, address[!radioNumber]);
@@ -829,12 +829,12 @@ void setup() {
   }
 }
 
-//static uint8_t tmp[14];
+static uint8_t tmp[14];
 
 void loop() {
   update_servos();
 
-   /*//
+   /*
    for(int i = 0;i < 14;i++){
     if(tmp[i] != tm_data[i]){
       tmp[i] = tm_data[i];
@@ -2339,8 +2339,8 @@ void battery_check(byte bshow) {
   int batt_danger = 0;
   int sensorValue = analogRead(BATT_MONITOR);
   //Serial.println(sensorValue);
-sensorValue = 1023;
-  batt_voltage = sensorValue * (3.3 / 1023.00) * 5.7;     // Convert the reading values from 3.3v to 12V
+
+  batt_voltage = 12.0; //sensorValue * (3.3 / 1023.00) * 5.7;     // Convert the reading values from 3.3v to 12V
  //Serial.println(batt_voltage);
 
   if (batt_voltage && ((batt_voltage <= (batt_voltage_prev - .05)) || (batt_voltage >= (batt_voltage_prev + .05)) || bshow)) {
